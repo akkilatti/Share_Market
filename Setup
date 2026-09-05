@@ -1,0 +1,233 @@
+# FYERS EMA Trading Bot - Setup Guide
+
+## Overview
+This is a complete Python trading bot that uses 5 and 21 EMA (Exponential Moving Average) crossover strategy to trade stocks automatically using the FYERS API.
+
+## Features
+- ✅ 5 & 21 EMA Crossover Strategy
+- ✅ Automated Buy/Sell Signal Generation
+- ✅ Risk Management (Stop Loss & Target)
+- ✅ Real-time Market Data
+- ✅ Position Monitoring
+- ✅ Trading Hours Management
+- ✅ Performance Tracking
+- ✅ Logging and Error Handling
+
+## Prerequisites
+1. **FYERS Trading Account** - Sign up at [fyers.in](https://fyers.in)
+2. **FYERS API Access** - Enable API access in your FYERS account
+3. **Python 3.8+** - Download from [python.org](https://python.org)
+
+## Installation Steps
+
+### 1. Clone/Download the Project
+```bash
+# Create project directory
+mkdir fyers-ema-bot
+cd fyers-ema-bot
+
+# Copy all the Python files to this directory
+```
+
+### 2. Install Required Packages
+```bash
+# Install dependencies
+pip install -r requirements.txt
+
+# Or install individually:
+pip install fyers-apiv3 pandas numpy pyotp requests python-dotenv schedule
+```
+
+### 3. FYERS API Setup
+
+#### A. Create FYERS App
+1. Login to [FYERS Developer Dashboard](https://myapi.fyers.in/)
+2. Click "Create App"
+3. Fill in details:
+   - App Name: "EMA Trading Bot"
+   - Redirect URL: `https://127.0.0.1:5000/auth`
+   - App Type: "Web App"
+4. Note down your **Client ID** and **Secret Key**
+
+#### B. Enable 2FA TOTP
+1. Go to FYERS mobile app
+2. Enable TOTP (Time-based One-Time Password)
+3. Save the TOTP secret key
+
+### 4. Configuration
+
+#### A. Create Environment File
+```bash
+# Run config setup
+python config.py
+```
+
+#### B. Edit .env File
+```bash
+# Edit the created .env file with your credentials
+FYERS_CLIENT_ID=your_client_id_here
+FYERS_SECRET_KEY=your_secret_key_here
+FYERS_REDIRECT_URI=https://127.0.0.1:5000/auth
+FYERS_TOTP_KEY=your_totp_secret_key_here
+```
+
+#### C. Modify Trading Settings
+Edit `config.py` to customize:
+```python
+# Trading Parameters
+SYMBOL = 'NSE:RELIANCE-EQ'  # Change to your preferred stock
+QUANTITY = 1  # Number of shares
+STOP_LOSS_PERCENT = 2.0  # Stop loss %
+TARGET_PERCENT = 4.0     # Target profit %
+```
+
+### 5. First Time Authentication
+```bash
+# Run authentication setup
+python auth.py
+```
+This will:
+1. Open browser for FYERS login
+2. Generate access token
+3. Save token for future use
+
+### 6. Test Components
+
+#### A. Test Data Handler
+```bash
+python data_handler.py
+```
+
+#### B. Test Order Manager
+```bash
+python order_manager.py
+```
+
+### 7. Run the Trading Bot
+```bash
+python trading_bot.py
+```
+
+## File Structure
+```
+fyers-ema-bot/
+├── config.py              # Configuration settings
+├── auth.py                # FYERS authentication
+├── data_handler.py        # Market data and indicators
+├── order_manager.py       # Order placement and management
+├── trading_bot.py         # Main trading bot
+├── requirements.txt       # Python dependencies
+├── .env                   # Environment variables (create this)
+├── access_token.txt       # Saved access token (auto-generated)
+└── trading_bot.log        # Trading logs (auto-generated)
+```
+
+## Strategy Details
+
+### EMA Crossover Strategy
+- **Buy Signal**: When 5 EMA crosses above 21 EMA
+- **Sell Signal**: When 5 EMA crosses below 21 EMA
+
+### Additional Filters
+- **RSI Filter**: Avoids overbought/oversold conditions
+- **Price Filter**: Confirms trend direction
+- **Time Filter**: Prevents duplicate signals
+
+### Risk Management
+- **Stop Loss**: Automatic stop loss at configured percentage
+- **Target**: Automatic profit booking at target percentage
+- **Position Limits**: Maximum positions per day
+- **Trading Hours**: Only trades during market hours
+
+## Usage
+
+### Manual Control
+```python
+# Start bot manually
+python trading_bot.py
+
+# Check status
+# The bot will print status every 30 minutes
+
+# Stop bot
+# Press Ctrl+C to stop gracefully
+```
+
+### Automated Schedule
+The bot automatically:
+- Starts trading at 9:15 AM (market open)
+- Stops trading at 3:30 PM (market close)
+- Runs strategy every minute during trading hours
+- Only trades on weekdays
+
+## Monitoring
+
+### Log Files
+- `trading_bot.log` - All trading activities
+- Console output - Real-time status
+
+### Key Metrics
+- Current positions
+- P&L tracking
+- Win/loss ratio
+- Daily trade count
+
+## Important Notes
+
+### ⚠️ Risk Warnings
+- **Paper Trading First**: Test with small amounts
+- **Market Risk**: All trading involves risk of loss
+- **API Limits**: Be aware of FYERS API rate limits
+- **Backtesting**: Test strategy on historical data first
+
+### 🔧 Customization
+- Modify EMA periods in `config.py`
+- Add more technical indicators in `data_handler.py`
+- Implement different strategies in `trading_bot.py`
+- Add email/SMS alerts for signals
+
+### 📊 Performance Optimization
+- Optimize signal filters
+- Implement portfolio management
+- Add multiple timeframe analysis
+- Include volume analysis
+
+## Troubleshooting
+
+### Common Issues
+
+#### 1. Authentication Errors
+```bash
+# Clear saved token and re-authenticate
+rm access_token.txt
+python auth.py
+```
+
+#### 2. API Rate Limits
+- Reduce strategy execution frequency
+- Implement exponential backoff
+
+#### 3. Data Issues
+- Check internet connection
+- Verify symbol format (e.g., 'NSE:RELIANCE-EQ')
+
+#### 4. Order Placement Errors
+- Check account balance
+- Verify market hours
+- Ensure sufficient margin
+
+## Support
+
+### FYERS API Documentation
+- [FYERS API Docs](https://myapi.fyers.in/docs/)
+- [FYERS Developer Support](https://fyers.in/support/)
+
+### Python Libraries
+- [Pandas Documentation](https://pandas.pydata.org/docs/)
+- [NumPy Documentation](https://numpy.org/doc/)
+
+## Legal Disclaimer
+This software is for educational purposes only. Trading involves substantial risk of loss. The developers are not responsible for any financial losses incurred from using this software. Always test with paper trading first and never risk more than you can afford to lose.
+
+## License
+This project is for educational use only. Please comply with FYERS API terms of service and local regulations.

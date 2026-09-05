@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>FYERS API Program Runner</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
+
+    :root {
+      --color-bg: #ffffff;
+      --color-text: #6b7280;
+      --color-text-dark: #111827;
+      --color-primary: #111827;
+      --card-bg: #f9fafb;
+      --shadow-light: rgba(0, 0, 0, 0.05);
+      --border-radius: 0.75rem;
+      --transition: 0.3s ease;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Inter', sans-serif;
+      background-color: var(--color-bg);
+      color: var(--color-text);
+      line-height: 1.6;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    a {
+      color: var(--color-primary);
+      text-decoration: none;
+      transition: color var(--transition);
+    }
+    a:hover,
+    a:focus {
+      color: #1f2937;
+      outline: none;
+    }
+
+    header {
+      position: sticky;
+      top: 0;
+      background: var(--color-bg);
+      border-bottom: 1px solid #e5e7eb;
+      z-index: 1000;
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 1px 3px var(--shadow-light);
+    }
+
+    .logo {
+      font-weight: 700;
+      font-size: 1.5rem;
+      color: var(--color-primary);
+      user-select: none;
+    }
+
+    nav ul {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      gap: 1.5rem;
+      font-weight: 600;
+      font-size: 1rem;
+      color: var(--color-text);
+    }
+
+    nav ul li a {
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.5rem;
+      transition: background-color var(--transition), color var(--transition);
+    }
+
+    nav ul li a:hover,
+    nav ul li a:focus {
+      background-color: var(--color-primary);
+      color: white;
+    }
+
+    main {
+      max-width: 1200px;
+      margin: 2rem auto 4rem auto;
+      padding: 0 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 3rem;
+    }
+
+    .hero {
+      text-align: center;
+      padding-top: 4rem;
+      padding-bottom: 4rem;
+    }
+
+    .hero h1 {
+      font-size: 48px;
+      font-weight: 800;
+      color: var(--color-primary);
+      margin-bottom: 0.5rem;
+      line-height: 1.1;
+    }
+
+    .hero p {
+      font-size: 20px;
+      max-width: 600px;
+      margin-left: auto;
+      margin-right: auto;
+      color: var(--color-text);
+      font-weight: 500;
+      margin-bottom: 2rem;
+    }
+
+    .btn-primary {
+      background-color: var(--color-primary);
+      color: white;
+      font-weight: 700;
+      padding: 1rem 2rem;
+      font-size: 18px;
+      border: none;
+      border-radius: var(--border-radius);
+      cursor: pointer;
+      transition: background-color var(--transition);
+      user-select: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+    }
+    .btn-primary:hover,
+    .btn-primary:focus {
+      background-color: #1f2937;
+      outline: none;
+    }
+
+    section.program-card {
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      padding: 1.5rem 2rem;
+      box-shadow: 0 4px 8px var(--shadow-light);
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    section.program-card h2 {
+      margin: 0;
+      font-weight: 700;
+      font-size: 1.75rem;
+      color: var(--color-primary);
+      user-select: none;
+    }
+
+    section.program-card pre {
+      background: white;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      font-family: 'Source Code Pro', monospace, monospace;
+      font-size: 14px;
+      line-height: 1.4;
+      max-height: 240px;
+      overflow-y: auto;
+      box-shadow: inset 0 0 5px #e5e7eb;
+    }
+
+    section.program-card button.run-btn {
+      align-self: flex-start;
+      margin-top: auto;
+    }
+
+    section.output-section {
+      background: var(--card-bg);
+      border-radius: var(--border-radius);
+      padding: 1rem 1.5rem;
+      box-shadow: 0 4px 8px var(--shadow-light);
+      min-height: 120px;
+      font-family: 'Source Code Pro', monospace, monospace;
+      font-size: 14px;
+      white-space: pre-wrap;
+      color: var(--color-text-dark);
+      user-select: text;
+      overflow-y: auto;
+      max-height: 300px;
+    }
+
+    @media (max-width: 768px) {
+      main {
+        margin: 1rem auto 3rem auto;
+      }
+      .hero h1 {
+        font-size: 36px;
+      }
+      .hero p {
+        font-size: 18px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="logo" aria-label="FYERS API Program Runner">FYERS API Runner</div>
+    <nav aria-label="Primary navigation">
+      <ul>
+        <li><a href="#auth" tabindex="0">Auth Module</a></li>
+        <li><a href="#data" tabindex="0">Data Handler</a></li>
+        <li><a href="#backtesting" tabindex="0">Backtesting</a></li>
+        <li><a href="#order" tabindex="0">Order Manager</a></li>
+        <li><a href="#tradingbot" tabindex="0">Trading Bot</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main>
+    <section class="hero" aria-label="Page introduction">
+      <h1>FYERS API Program Runner</h1>
+      <p>Interactive interface to view and simulate your FYERS API Python modules. Click 'Run' to simulate execution logs below.</p>
+    </section>
+
+    <!-- Auth.py Section -->
+    <section id="auth" class="program-card" tabindex="0" aria-label="FYERS API Authentication Module">
+      <h2>auth.py - Authentication Module</h2>
+      <pre id="code-auth" aria-live="polite">
+// Python: FYERS API Authentication Module
+import pyotp
+import requests
+import webbrowser
+from urllib.parse import urlparse, parse_qs
+from fyers_apiv3 import fyersModel
+from config import Config
+import logging
+
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+class FyersAuth:
+    TOKEN_FILENAME = 'access_token.txt'
+
+    def __init__(self):
+        self.client_id = Config.CLIENT_ID
+        self.secret_key = Config.SECRET_KEY
+        self.redirect_uri = Config.REDIRECT_URI
+        self.totp_key = Config.TOTP_KEY
+        self.access_token = None
+        self.fyers = None
+
+    def create_session(self):
+        ...
+
+    def generate_auth_url(self):
+        ...
+
+    def get_totp(self):
+        ...
+
+    def authenticate(self, auth_code=None):
+        ...
+
+    def get_profile(self):
+        ...
+
+    def save_token(self):
+        ...
+
+    def load_token(self):
+        ...
+
+if __name__ == "__main__":
+    auth = FyersAuth()
+    if not auth.load_token():
+        if auth.authenticate():
+            auth.save_token()
+    profile = auth.get_profile()
+    if profile:
+        print("Authentication successful!")
+        print(f"User: {profile.get('name', 'Unknown')}")
+    else:
+        print("Authentication failed!")
+      </pre>
+      <button class="btn-primary run-btn" data-module="auth">Run Auth Module</button>
+      <div class="output-section" id="output-auth" aria-label="Authentication module output" tabindex="0"></div>
+    </section>
+
+    <!-- Data Handler -->
+    <section id="data" class="program-card" tabindex="0" aria-label="Data Handler Module">
+      <h2>data_handler.py - Market Data Handler</h2>
+      <pre id="code-data" aria-live="polite">
+// Python: Data handler with market data fetch and indicator calculation
+(imports and code truncated for brevity)
+key functions:
+- get_historical_data()
+- get_current_price()
+- calculate_ema()
+- calculate_indicators()
+- check_trading_hours()
+      </pre>
+      <button class="btn-primary run-btn" data-module="data_handler">Run Data Handler</button>
+      <div class="output-section" id="output-data_handler" aria-label="Data handler module output" tabindex="0"></div>
+    </section>
+
+    <!-- Backtesting -->
+    <section id="backtesting" class="program-card" tabindex="0" aria-label="Backtesting Module">
+      <h2>backtesting.py - EMA Strategy Backtester</h2>
+      <pre id="code-backtesting" aria-live="polite">
+// Python EMA Crossover Backtesting class with metrics and plotting
+(imports and code truncated for brevity)
+Key features:
+- calculate_ema_signals()
+- backtest_strategy()
+- calculate_metrics()
+- print_results()
+      </pre>
+      <button class="btn-primary run-btn" data-module="backtesting">Run Backtesting</button>
+      <div class="output-section" id="output-backtesting" aria-label="Backtesting module output" tabindex="0"></div>
+    </section>
+
+    <!-- Order Manager -->
+    <section id="order" class="program-card" tabindex="0" aria-label="Order Manager Module">
+      <h2>order_manager.py - Order Management System</h2>
+      <pre id="code-order" aria-live="polite">
+// Python Order Manager to handle buy/sell/stoploss/target orders
+(imports and code truncated for brevity)
+Core methods:
+- place_buy_order()
+- place_sell_order()
+- place_stop_loss_order()
+- place_target_order()
+- execute_ema_strategy()
+      </pre>
+      <button class="btn-primary run-btn" data-module="order_manager">Run Order Manager</button>
+      <div class="output-section" id="output-order_manager" aria-label="Order manager module output" tabindex="0"></div>
+    </section>
+
+    <!-- Trading Bot -->
+    <section id="tradingbot" class="program-card" tabindex="0" aria-label="Trading Bot Module">
+      <h2>trading_bot.py - Main Trading Bot</h2>
+      <pre id="code-tradingbot" aria-live="polite">
+// Python EMA Trading Bot integrating auth, data handler, and order manager
+(imports and code truncated for brevity)
+Features:
+- initialize()
+- check_ema_signals()
+- execute_trade()
+- run_strategy_cycle()
+- schedule_tasks()
+      </pre>
+      <button class="btn-primary run-btn" data-module="trading_bot">Run Trading Bot</button>
+      <div class="output-section" id="output-trading_bot" aria-label="Trading bot module output" tabindex="0"></div>
+    </section>
+  </main>
+
+  <script>
+    // Simulated outputs for demo purposes since backend Python execution is not possible here
+    const fakeOutputs = {
+      auth: `INFO: Authentication successful!
+User: John Doe
+`,
+      data_handler: `INFO: Fetched 100 historical candles
+INFO: Current price of NSE:RELIANCE-EQ: 2543.25
+INFO: Calculated EMA and RSI indicators
+INFO: Market is open for trading: true`,
+      backtesting: `BACKTEST RESULTS - EMA CROSSOVER STRATEGY
+Initial Capital: ₹100,000.00
+Final Equity: ₹114,563.75
+Total Return: 14.56%
+Total Profit: ₹14,563.75
+Total Trades: 24
+Winning Trades: 14
+Losing Trades: 10
+Win Rate: 58.33%
+Average Profit per Trade: ₹606.82
+Average Profit Percentage: 5.07%
+Max Profit: ₹1,200.50
+Max Loss: ₹-900.75
+Max Drawdown: -12.30%
+Sharpe Ratio: 1.12
+Average Trade Duration: 8.25 days`,
+      order_manager: `INFO: Buy order placed successfully. Order ID: ORD12345
+INFO: Stop loss order placed. Order ID: ORD12346, Trigger: 2300.00
+INFO: Target order placed. Order ID: ORD12347, Target: 2800.00
+Current positions:
+NSE:RELIANCE-EQ: 10 shares @ 2500.00 | P&L: 500.00`,
+      trading_bot: `INFO: Initializing Trading Bot...
+INFO: Authentication successful!
+INFO: Market session started - Trading activated
+INFO: Price: 2543.25, EMA5: 2520.15, EMA21: 2480.50, RSI: 45.75, Signal: 1
+INFO: Executing BUY signal at price: 2543.25
+INFO: Trade executed: BUY at 2543.25
+INFO: Monitoring positions...
+INFO: Position: 10 @ 2543.25, Current: 2550.00, P&L: 67.50 (0.27%)
+INFO: Trading Bot running...`
+    };
+
+    function runModule(module) {
+      const outputDiv = document.getElementById('output-' + module);
+      outputDiv.textContent = 'Running ' + module + ' module...\n\n';
+      // Simulate delay
+      setTimeout(() => {
+        outputDiv.textContent += fakeOutputs[module] || 'Simulated output unavailable.';
+        outputDiv.scrollTop = outputDiv.scrollHeight;
+      }, 1000);
+    }
+
+    document.querySelectorAll('.run-btn').forEach(button => {
+      button.addEventListener('click', () => {
+        const module = button.dataset.module;
+        runModule(module);
+      });
+    });
+
+    // Smooth scroll for internal anchor navigation with focus
+    document.querySelectorAll('nav a').forEach(anchor => {
+      anchor.addEventListener('click', (e) => {
+        e.preventDefault();
+        const targetID = anchor.getAttribute('href').substring(1);
+        const targetSection = document.getElementById(targetID);
+        if (targetSection) {
+          targetSection.scrollIntoView({behavior: 'smooth', block: 'start'});
+          targetSection.focus();
+        }
+      });
+    });
+  </script>
+</body>
+</html>
+
